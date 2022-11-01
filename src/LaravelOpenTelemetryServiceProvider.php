@@ -3,7 +3,7 @@ namespace SeanHood\LaravelOpenTelemetry;
 
 use Illuminate\Support\ServiceProvider;
 
-use OpenTelemetry\Contrib\Zipkin\Exporter as ZipkinExporter;
+use OpenTelemetry\Contrib\OtlpHttp\Exporter as OTLPExporter;
 use OpenTelemetry\Sdk\Trace\SpanProcessor\SimpleSpanProcessor;
 use OpenTelemetry\Sdk\Trace\TracerProvider;
 use OpenTelemetry\Trace\Tracer;
@@ -54,16 +54,13 @@ class LaravelOpenTelemetryServiceProvider extends ServiceProvider
         if(!config('laravel_opentelemetry.enable')) {
             return null;
         }
-
-        $zipkinExporter = new ZipkinExporter(
-            config('laravel_opentelemetry.service_name'),
-            config('laravel_opentelemetry.zipkin_endpoint')
-        );
+        
+        $exporter = OTLPExporter::fromConnectionString();
 
         $provider = new TracerProvider();
 
         return $provider
-            ->addSpanProcessor(new SimpleSpanProcessor($zipkinExporter))
+            ->addSpanProcessor(new SimpleSpanProcessor($exporter))
             ->getTracer('io.opentelemetry.contrib.php');
     }
 }
