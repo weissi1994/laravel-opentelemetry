@@ -5,9 +5,10 @@ namespace SeanHood\LaravelOpenTelemetry\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use OpenTelemetry\Trace\Span;
-use OpenTelemetry\Trace\SpanStatus;
-use OpenTelemetry\Trace\Tracer;
+use OpenTelemetry\Context\Context;
+use OpenTelemetry\API\Trace\TracerInterface;
+use OpenTelemetry\SDK\Trace\Tracer;
+use OpenTelemetry\API\Trace\Span;
 
 /**
  * Trace an incoming HTTP request
@@ -33,42 +34,34 @@ class Trace
      */
     public function handle($request, Closure $next)
     {
-        $span = $this->tracer->startAndActivateSpan('http_'.strtolower($request->method()));
+        $span = $this->tracer->spanBuilder('http_'.strtolower($request->method()))->startSpan();
         $response = $next($request);
 
         $this->setSpanStatus($span, $response->status());
         $this->addConfiguredTags($span, $request, $response);
         $span->setAttribute('response.status', $response->status());
         
-        $this->tracer->endActiveSpan();
+        $span->end();
 
         return $response;
     }
 
     private function setSpanStatus(Span $span, int $httpStatusCode)
     {
-        switch($httpStatusCode) {
-            case 400:
-                $span->setSpanStatus(SpanStatus::FAILED_PRECONDITION, SpanStatus::DESCRIPTION[SpanStatus::FAILED_PRECONDITION]);
-                return;
-            case 401:
-                $span->setSpanStatus(SpanStatus::UNAUTHENTICATED, SpanStatus::DESCRIPTION[SpanStatus::UNAUTHENTICATED]);
-                return;
-            case 403:
-                $span->setSpanStatus(SpanStatus::PERMISSION_DENIED, SpanStatus::DESCRIPTION[SpanStatus::PERMISSION_DENIED]);
-                return;
-            case 404:
-                $span->setSpanStatus(SpanStatus::NOT_FOUND, SpanStatus::DESCRIPTION[SpanStatus::NOT_FOUND]);
-                return;
-        }
 
         if($httpStatusCode >= 500 && $httpStatusCode < 600) {
-            $span->setSpanStatus(SpanStatus::INTERNAL, SpanStatus::DESCRIPTION[SpanStatus::INTERNAL]);
+            $span->setAttribute('status_class', '5xx');
+        } elseif($httpStatusCode >= 400 && $httpStatusCode < 500) {
+            $span->setAttribute('status_class', '4xx');
+        } elseif($httpStatusCode >= 300 && $httpStatusCode < 400) {
+            $span->setAttribute('status_class', '3xx');
+        } elseif($httpStatusCode >= 200 && $httpStatusCode < 300) {
+            $span->setAttribute('status_class', '2xx');
+        } else {
+            $span->setAttribute('status_class', 'other');
         }
 
-        if($httpStatusCode >= 200 && $httpStatusCode < 300) {
-            $span->setSpanStatus(SpanStatus::OK, SpanStatus::DESCRIPTION[SpanStatus::OK]);
-        }
+        $span->setAttribute('status_code', $httpStatusCode);
     }
 
     private function addConfiguredTags(Span $span, Request $request, $response)
