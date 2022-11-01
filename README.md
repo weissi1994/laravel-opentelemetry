@@ -8,7 +8,7 @@ Laravel OpenTelemetry helps integrate OpenTelemetry Traces into your Laravel app
 ### Requirements
 
 * Laravel 5+
-* OpenTelemetry Collector w/ ZipKin 
+* OpenTelemetry Collector w/ OLTP 
 
 ### Features
 
@@ -43,6 +43,6 @@ php artisan vendor:publish --provider="SeanHood\LaravelOpenTelemetry\LaravelOpen
 
 * `'enable' => true`: Whether to enable LaravelOpenTelemetry
 
-* `'zipkin_endpoint' => 'http://localhost:9411/api/v2/spans'`: Zipkin Endpoint to send spans to.
+* `'oltp_endpoint' => 'http://localhost:4318'`: OLTP Endpoint to send spans to.
 
 * `'service_name' => 'laravel-otel'`: The name of your application as you'd like to identify it in your traces.
