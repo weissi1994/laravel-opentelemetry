@@ -53,12 +53,13 @@ return [
     */
 
     'tags' => [
-        'ip'     => true, // Requester's IP address
-        'path'   => true, // Path requested
-        'url'    => true, // Full URL requested
-        'method' => true, // HTTP method of the request
-        'secure' => true, // Whether the request has been secured with SSL/TLS
-        'ua'     => true, // Requester's user agent
-        'user'   => true, // Authenticated username
+        'ip'      => true, // Requester's IP address
+        'path'    => true, // Path requested
+        'url'     => true, // Full URL requested
+        'method'  => true, // HTTP method of the request
+        'secure'  => true, // Whether the request has been secured with SSL/TLS
+        'ua'      => true, // Requester's user agent
+        'user'    => true, // Authenticated username
+        'payload' => true, // Payload
     ]
 ];
