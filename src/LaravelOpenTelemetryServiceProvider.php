@@ -4,9 +4,9 @@ namespace SeanHood\LaravelOpenTelemetry;
 use Illuminate\Support\ServiceProvider;
 
 use OpenTelemetry\Contrib\OtlpHttp\Exporter as OTLPExporter;
-use OpenTelemetry\Sdk\Trace\SpanProcessor\SimpleSpanProcessor;
-use OpenTelemetry\Sdk\Trace\TracerProvider;
-use OpenTelemetry\Trace\Tracer;
+use OpenTelemetry\SDK\Trace\SpanProcessor\SimpleSpanProcessor;
+use OpenTelemetry\SDK\Trace\TracerProvider;
+use OpenTelemetry\SDK\Trace\Tracer;
 
 /**
  * LaravelOpenTelemetryServiceProvider injects a configured OpenTelemetry Tracer into
@@ -57,10 +57,10 @@ class LaravelOpenTelemetryServiceProvider extends ServiceProvider
         
         $exporter = OTLPExporter::fromConnectionString();
 
-        $provider = new TracerProvider();
+        $provider = new TracerProvider(
+          new SimpleSpanProcessor($exporter)
+        );
 
-        return $provider
-            ->addSpanProcessor(new SimpleSpanProcessor($exporter))
-            ->getTracer('io.opentelemetry.contrib.php');
+        return $provider->getTracer('io.opentelemetry.contrib.php');
     }
 }
