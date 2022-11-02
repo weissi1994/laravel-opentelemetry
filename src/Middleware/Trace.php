@@ -79,8 +79,12 @@ class Trace
     {
         $configurationKey = 'laravel_opentelemetry.tags.';
 
+        if(config($configurationKey.'host')) {
+            $span->setAttribute('http.host', $request->getSchemeAndHttpHost());
+        }
+        
         if(config($configurationKey.'path')) {
-            $span->setAttribute('http.path', $request->path());
+            $span->setAttribute('http.route', $request->path());
         }
 
         if(config($configurationKey.'url')) {
