@@ -60,6 +60,7 @@ return [
         'secure'  => true, // Whether the request has been secured with SSL/TLS
         'ua'      => true, // Requester's user agent
         'user'    => true, // Authenticated username
+        'headers' => true, // All Headers
         'payload' => true, // Payload
     ]
 ];
