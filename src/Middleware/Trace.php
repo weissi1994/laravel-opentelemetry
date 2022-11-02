@@ -95,5 +95,21 @@ class Trace
         if(config($configurationKey.'user') && $request->user()) {
             $span->setAttribute('request.user', $request->user()->email);
         }
+    
+        if(config($configurationKey.'headers')) {
+            $headers = collect($request->header())->transform(function ($item) {
+                return $item[0];
+            });
+            $span->setAttribute('request.headers', $headers);
+        }
+        
+        if(config($configurationKey.'payload') && $request->getContent()) {
+            $span->setAttribute('request.payload', $request->getContent());
+        }
+        
+        if(config($configurationKey.'payload') && $response->getContent()) {
+            $span->setAttribute('response.payload', $response->getContent());
+        }
+        
     }
 }
