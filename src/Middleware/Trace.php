@@ -40,6 +40,7 @@ class Trace
 
         $this->setSpanStatus($span, $response->status());
         $this->addConfiguredTags($span, $request, $response);
+        $span->setAttribute('component', 'http');
         
         $span->end();
         $scope->detach();
