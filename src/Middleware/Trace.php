@@ -40,7 +40,6 @@ class Trace
 
         $this->setSpanStatus($span, $response->status());
         $this->addConfiguredTags($span, $request, $response);
-        $span->setAttribute('response.status', $response->status());
         
         $span->end();
         $scope->detach();
@@ -52,34 +51,38 @@ class Trace
     {
 
         if($httpStatusCode >= 500 && $httpStatusCode < 600) {
-            $span->setAttribute('status_class', '5xx');
+            $span->setAttribute('http.status_class', '5xx');
         } elseif($httpStatusCode >= 400 && $httpStatusCode < 500) {
-            $span->setAttribute('status_class', '4xx');
+            $span->setAttribute('http.status_class', '4xx');
         } elseif($httpStatusCode >= 300 && $httpStatusCode < 400) {
-            $span->setAttribute('status_class', '3xx');
+            $span->setAttribute('http.status_class', '3xx');
         } elseif($httpStatusCode >= 200 && $httpStatusCode < 300) {
-            $span->setAttribute('status_class', '2xx');
+            $span->setAttribute('http.status_class', '2xx');
         } else {
-            $span->setAttribute('status_class', 'other');
+            $span->setAttribute('http.status_class', 'other');
         }
 
-        $span->setAttribute('status_code', $httpStatusCode);
+        $span->setAttribute('http.status_code', $httpStatusCode);
     }
 
     private function addConfiguredTags(Span $span, Request $request, $response)
     {
         $configurationKey = 'laravel_opentelemetry.tags.';
 
+        if(config($configurationKey.'host')) {
+            $span->setAttribute('http.host', $request->getHttpHost());
+        }
+        
         if(config($configurationKey.'path')) {
-            $span->setAttribute('request.path', $request->path());
+            $span->setAttribute('http.route', $request->path());
         }
 
         if(config($configurationKey.'url')) {
-            $span->setAttribute('request.url', $request->fullUrl());
+            $span->setAttribute('http.url', $request->fullUrl());
         } 
         
         if(config($configurationKey.'method')) {
-            $span->setAttribute('request.method', $request->method());
+            $span->setAttribute('http.method', $request->method());
         }
 
         if(config($configurationKey.'secure')) {
