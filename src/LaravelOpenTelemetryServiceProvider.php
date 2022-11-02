@@ -55,7 +55,10 @@ class LaravelOpenTelemetryServiceProvider extends ServiceProvider
             return null;
         }
         
-        $exporter = OTLPExporter::fromConnectionString();
+        $exporter = OTLPExporter::fromConnectionString(
+            config('laravel_opentelemetry.oltp_endpoint'),
+            config('laravel_opentelemetry.service_name')
+        );
 
         $provider = new TracerProvider(
           new SimpleSpanProcessor($exporter)
