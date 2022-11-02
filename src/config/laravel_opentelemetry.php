@@ -54,6 +54,7 @@ return [
 
     'tags' => [
         'ip'      => true, // Requester's IP address
+        'host'    => true, // Host requested
         'path'    => true, // Path requested
         'url'     => true, // Full URL requested
         'method'  => true, // HTTP method of the request
