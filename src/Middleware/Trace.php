@@ -36,7 +36,7 @@ class Trace
     public function handle($request, Closure $next)
     {
         $parent = TraceContextPropagator::getInstance()->extract($request->getHeaders());
-        $span = $this->tracer->spanBuilder(strtoupper($request->method()).'_'.strtolower($request->path()))
+        $span = $this->tracer->spanBuilder(strtoupper($request->method()).'_'.strtolower($request->path()));
         if ($parent != null) {
             $span->setParent($parent);
         }
