@@ -69,12 +69,8 @@ class Trace
     {
         $configurationKey = 'laravel_opentelemetry.tags.';
 
-        if(config($configurationKey.'host')) {
-            $span->setAttribute('http.host', $request->getHttpHost());
-        }
-        
         if(config($configurationKey.'path')) {
-            $span->setAttribute('http.route', $request->path());
+            $span->setAttribute('http.path', $request->path());
         }
 
         if(config($configurationKey.'url')) {
@@ -86,30 +82,30 @@ class Trace
         }
 
         if(config($configurationKey.'secure')) {
-            $span->setAttribute('request.secure', $request->secure());
+            $span->setAttribute('http.secure', $request->secure());
         }
 
         if(config($configurationKey.'ip')) {
-            $span->setAttribute('request.ip', $request->ip());
+            $span->setAttribute('http.ip', $request->ip());
         }
 
         if(config($configurationKey.'ua')) {
-            $span->setAttribute('request.ua', $request->userAgent());
+            $span->setAttribute('http.ua', $request->userAgent());
         }
 
         if(config($configurationKey.'user') && $request->user()) {
-            $span->setAttribute('request.user', $request->user()->email);
+            $span->setAttribute('http.user', $request->user()->email);
         }
     
         if(config($configurationKey.'headers')) {
             $headers = collect($request->header())->transform(function ($item) {
                 return $item[0];
             });
-            $span->setAttribute('request.headers', $headers);
+            $span->setAttribute('http.headers', $headers);
         }
         
         if(config($configurationKey.'payload') && $request->getContent()) {
-            $span->setAttribute('request.payload', $request->getContent());
+            $span->setAttribute('http.payload', $request->getContent());
         }
         
         if(config($configurationKey.'payload') && $response->getContent()) {
