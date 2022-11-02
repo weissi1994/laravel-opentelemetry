@@ -1,5 +1,5 @@
 {
-  "name": "weissi1994/laravel-opentelemetry",
+  "name": "seanhood/laravel-opentelemetry",
   "description": "Laravel middleware to send events to OpenTelemetry",
   "type": "library",
   "license": "MIT",
