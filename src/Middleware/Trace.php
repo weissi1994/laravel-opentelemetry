@@ -34,7 +34,7 @@ class Trace
      */
     public function handle($request, Closure $next)
     {
-        $span = $this->tracer->spanBuilder('http_'.strtolower($request->method()).'_'.strtolower($request->path()))->startSpan();
+        $span = $this->tracer->spanBuilder(strtoupper($request->method()).'_'.strtolower($request->path()))->startSpan();
         $scope = $span->activate();
         $response = $next($request);
 
