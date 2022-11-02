@@ -9,6 +9,7 @@ use OpenTelemetry\Context\Context;
 use OpenTelemetry\API\Trace\TracerInterface;
 use OpenTelemetry\SDK\Trace\Tracer;
 use OpenTelemetry\SDK\Trace\Span;
+use OpenTelemetry\API\Trace\Propagation\TraceContextPropagator;
 
 /**
  * Trace an incoming HTTP request
@@ -34,7 +35,13 @@ class Trace
      */
     public function handle($request, Closure $next)
     {
-        $span = $this->tracer->spanBuilder(strtoupper($request->method()).'_'.strtolower($request->path()))->startSpan();
+        $parent = TraceContextPropagator::getInstance()->extract($request->getHeaders());
+        $span = $this->tracer->spanBuilder(strtoupper($request->method()).'_'.strtolower($request->path()))
+        if ($parent != null) {
+            $span->setParent($parent);
+        }
+        $span->startSpan();
+        
         $scope = $span->activate();
         $response = $next($request);
 
