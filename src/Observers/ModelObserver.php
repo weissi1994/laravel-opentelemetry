@@ -2,7 +2,7 @@
 
 namespace SeanHood\LaravelOpenTelemetry\Observers;
 
-use SeanHood\LaravelOpenTelemetry\Models\TraceableModel;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use OpenTelemetry\Context\Context;
@@ -36,44 +36,44 @@ class ModelObserver {
         $this->span = $spanBuilder->startSpan();
     }
   
-    private function startTrace(TraceableModel $model, $operation)
+    private function startTrace(Model $model, $operation)
     {
         $this->spanScope = $this->span->activate();
         $span->setAttribute('model', $model);
         $span->setAttribute('operation', $operation);
     }
 
-    private function endTrace(TraceableModel $model)
+    private function endTrace(Model $model)
     {
         $this->span->end();
         $this->spanScope->detach();
     }
 
-    public function creating(TraceableModel $model) {
+    public function creating(Model $model) {
         $this->startTrace($model, 'create');
     }
     public function created(TraceableModel $model) {
         $this->endTrace($model);
     }
 
-    public function updating(TraceableModel $model) {
+    public function updating(Model $model) {
         $this->startTrace($model, 'update');
     }
-    public function updated(TraceableModel $model) {
+    public function updated(Model $model) {
         $this->endTrace($model);
     }
 
-    public function deleting(TraceableModel $model) {
+    public function deleting(Model $model) {
         $this->startTrace($model, 'delete');
     }
-    public function deleted(TraceableModel $model) {
+    public function deleted(Model $model) {
         $this->endTrace($model);
     }
 
-    public function restoring(TraceableModel $model) {
+    public function restoring(Model $model) {
         $this->startTrace($model, 'restore');
     }
-    public function restored(TraceableModel $model) {
+    public function restored(Model $model) {
         $this->endTrace($model);
     }
 }
