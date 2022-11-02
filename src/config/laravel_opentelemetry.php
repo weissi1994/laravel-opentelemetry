@@ -39,7 +39,7 @@ return [
     |
     */
 
-    'zipkin_endpoint' => 'http://localhost:9411/api/v2/spans',
+    'oltp_endpoint' => 'http://localhost:4318',
 
     /*
     |--------------------------------------------------------------------------
