@@ -60,12 +60,14 @@ class Trace
 
         if($httpStatusCode >= 500 && $httpStatusCode < 600) {
             $span->setAttribute('http.status_class', '5xx');
+            $span->setStatus('Error');
         } elseif($httpStatusCode >= 400 && $httpStatusCode < 500) {
             $span->setAttribute('http.status_class', '4xx');
         } elseif($httpStatusCode >= 300 && $httpStatusCode < 400) {
             $span->setAttribute('http.status_class', '3xx');
         } elseif($httpStatusCode >= 200 && $httpStatusCode < 300) {
             $span->setAttribute('http.status_class', '2xx');
+            $span->setStatus('Ok');
         } else {
             $span->setAttribute('http.status_class', 'other');
         }
