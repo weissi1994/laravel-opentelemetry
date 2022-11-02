@@ -8,7 +8,7 @@ use Illuminate\Http\Response;
 use OpenTelemetry\Context\Context;
 use OpenTelemetry\API\Trace\TracerInterface;
 use OpenTelemetry\SDK\Trace\Tracer;
-use OpenTelemetry\API\Trace\Span;
+use OpenTelemetry\SDK\Trace\Span;
 
 /**
  * Trace an incoming HTTP request
