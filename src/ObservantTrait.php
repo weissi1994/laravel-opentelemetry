@@ -8,6 +8,6 @@ trait ObservantTrait
 {
     public static function bootObservantTrait()
     {
-        static::observe(new ModelObserver);
+        static::observe(new ModelObserver());
     }
 }

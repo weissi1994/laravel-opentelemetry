@@ -3,13 +3,9 @@
 namespace SeanHood\LaravelOpenTelemetry\Observers;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use OpenTelemetry\Context\Context;
-use OpenTelemetry\API\Trace\TracerInterface;
-use OpenTelemetry\SDK\Trace\Tracer;
 use OpenTelemetry\SDK\Trace\Span;
 use OpenTelemetry\API\Trace\Propagation\TraceContextPropagator;
+use OpenTelemetry\SDK\Trace\Tracer;
 
 class ModelObserver {
     /**
