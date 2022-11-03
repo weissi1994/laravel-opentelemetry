@@ -7,9 +7,14 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use OpenTelemetry\Context\Context;
 use OpenTelemetry\API\Trace\TracerInterface;
+use OpenTelemetry\API\Trace\StatusCode;
+use OpenTelemetry\API\Trace\SpanKind;
+use OpenTelemetry\SDK\Trace\TracerProviderFactory;
 use OpenTelemetry\SDK\Trace\Tracer;
 use OpenTelemetry\SDK\Trace\Span;
 use OpenTelemetry\API\Trace\Propagation\TraceContextPropagator;
+use Slim\Routing\RouteContext;
+
 
 /**
  * Trace an incoming HTTP request
@@ -35,23 +40,21 @@ class Trace
      */
     public function handle($request, Closure $next)
     {
-        $parent = TraceContextPropagator::getInstance()->extract($request->header());
-        $spanBuilder = $this->tracer->spanBuilder(strtoupper($request->method()).'_'.strtolower($request->path()));
-        if ($parent != null) {
-            $spanBuilder->setParent($parent);
-        }
-        $span = $spanBuilder->startSpan();
-        
-        $scope = $span->activate();
+        $carrier = TraceContextPropagator::getInstance()->extract($request->header());
+        $routeContext = RouteContext::fromRequest($request);
+        $root = $this->tracer->spanBuilder(strtoupper($request->method()).'_'.$request->path())
+            ->setStartTimestamp((int) ($request->getServerParams()['REQUEST_TIME_FLOAT'] * 1e9))
+            ->setParent($carrier)
+            ->setSpanKind(SpanKind::KIND_SERVER)
+            ->startSpan();
+        $root->activate();        
         $response = $next($request);
 
-        $this->setSpanStatus($span, $response->status());
-        $this->addConfiguredTags($span, $request, $response);
-        $span->setAttribute('component', 'http');
+        $this->setSpanStatus($root, $response->status());
+        $this->addConfiguredTags($root, $request, $response);
+        $root->setAttribute('component', 'http');
         
-        $span->end();
-        $scope->detach();
-
+        $root->end();
         return $response;
     }
 
@@ -60,18 +63,16 @@ class Trace
 
         if($httpStatusCode >= 500 && $httpStatusCode < 600) {
             $span->setAttribute('http.status_class', '5xx');
-            $span->setStatus('Error');
         } elseif($httpStatusCode >= 400 && $httpStatusCode < 500) {
             $span->setAttribute('http.status_class', '4xx');
         } elseif($httpStatusCode >= 300 && $httpStatusCode < 400) {
             $span->setAttribute('http.status_class', '3xx');
         } elseif($httpStatusCode >= 200 && $httpStatusCode < 300) {
             $span->setAttribute('http.status_class', '2xx');
-            $span->setStatus('Ok');
         } else {
             $span->setAttribute('http.status_class', 'other');
         }
-
+        $span->setStatus($httpStatusCode < 500 ? StatusCode::STATUS_OK : StatusCode::STATUS_ERROR);
         $span->setAttribute('http.status_code', $httpStatusCode);
     }
 
