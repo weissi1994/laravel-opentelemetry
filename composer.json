@@ -3,12 +3,6 @@
   "description": "Laravel middleware to send events to OpenTelemetry",
   "type": "library",
   "license": "MIT",
-  "require": {
-    "open-telemetry/opentelemetry": "dev-master",
-    "guzzlehttp/psr7": "1.9.0",
-    "guzzlehttp/guzzle": "6.5.8",
-    "php-http/guzzle6-adapter": "v2.0.1"
-  },
   "autoload": {
     "psr-4": {
       "SeanHood\\LaravelOpenTelemetry\\": "src"
@@ -28,7 +22,13 @@
     "format": "phpcbf --standard=psr2 src/"
   },
   "require-dev": {
-    "orchestra/testbench": "^4.0",
-    "squizlabs/php_codesniffer": "^3.5"
+    "orchestra/testbench": "v4.18.0",
+    "squizlabs/php_codesniffer": "^3.5",
+    "open-telemetry/opentelemetry": "dev-main",
+    "laravel/framework": "v6.20.44",
+    "phpunit/phpunit": "9.5.26",
+    "guzzlehttp/psr7": "2.4.3",
+    "guzzlehttp/guzzle": "7.5.0",
+    "php-http/guzzle7-adapter": "1.0.0"
   }
 }
