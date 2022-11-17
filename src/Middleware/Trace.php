@@ -10,7 +10,6 @@ use OpenTelemetry\API\Trace\SpanKind;
 use OpenTelemetry\SDK\Trace\Tracer;
 use OpenTelemetry\SDK\Trace\Span;
 use OpenTelemetry\API\Trace\Propagation\TraceContextPropagator;
-use Slim\Routing\RouteContext;
 
 
 /**
@@ -38,7 +37,6 @@ class Trace
     public function handle($request, Closure $next)
     {
         $carrier = TraceContextPropagator::getInstance()->extract($request->header());
-        $routeContext = RouteContext::fromRequest($request);
         $root = $this->tracer->spanBuilder(strtoupper($request->method()).'_'.$request->path())
             ->setStartTimestamp((int) ($request->getServerParams()['REQUEST_TIME_FLOAT'] * 1e9))
             ->setParent($carrier)
