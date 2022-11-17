@@ -36,6 +36,7 @@ class Trace
      */
     public function handle($request, Closure $next)
     {
+    try{
         $carrier = TraceContextPropagator::getInstance()->extract($request->header());
         $root = $this->tracer->spanBuilder(strtoupper($request->method()).'_'.$request->path())
             ->setParent($carrier)
@@ -47,9 +48,10 @@ class Trace
         $this->setSpanStatus($root, $response->status());
         $this->addConfiguredTags($root, $request, $response);
         $root->setAttribute('component', 'http');
-        
+      } finally {
         $root->end();
         return $response;
+      }
     }
 
     private function setSpanStatus(Span $span, int $httpStatusCode)
