@@ -49,7 +49,9 @@ class Trace
         $this->addConfiguredTags($root, $request, $response);
         $root->setAttribute('component', 'http');
       } catch (Exception $e) {
+        $root->end();
         $response = $next($request);
+        return $response;
       } finally {
         $root->end();
         return $response;
