@@ -38,7 +38,6 @@ class Trace
     {
         $carrier = TraceContextPropagator::getInstance()->extract($request->header());
         $root = $this->tracer->spanBuilder(strtoupper($request->method()).'_'.$request->path())
-            ->setStartTimestamp((int) ($request->getServerParams()['REQUEST_TIME_FLOAT'] * 1e9))
             ->setParent($carrier)
             ->setSpanKind(SpanKind::KIND_SERVER)
             ->startSpan();
