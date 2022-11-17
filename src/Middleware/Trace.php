@@ -42,7 +42,7 @@ class Trace
             ->setParent($carrier)
             ->setSpanKind(SpanKind::KIND_SERVER)
             ->startSpan();
-        $root->activate();        
+        $scope = $root->activate();        
         $response = $next($request);
 
         $this->setSpanStatus($root, $response->status());
@@ -50,6 +50,7 @@ class Trace
         $root->setAttribute('component', 'http');
         
         $root->end();
+        $scope->detach();
         return $response;
     }
 
